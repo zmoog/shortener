@@ -1,0 +1,35 @@
+# Build the Go binary
+FROM golang:1.20 as build_shortener-api
+ENV CGO_ENABLED 0
+ARG BUILD_REF
+
+# Copy the source code into the container
+# RUN mkdir -p /service
+# COPY * /service/
+# WORKDIR /service
+# RUN go mod download
+
+COPY . /service
+
+# Build the service binary
+WORKDIR /service/app/services/shortener-api
+RUN ls -l
+RUN go build -ldflags "-X main.build=${BUILD_REF}"
+
+# Run the Go Binary in Alpine.
+FROM alpine:3.17
+ARG BUILD_DATE
+ARG BUILD_REF
+RUN addgroup -g 1000 -S shortener && \
+    adduser -u 1000 -h /service -G shortener -S shortener
+COPY --from=build_shortener-api --chown=shortener:shortener /service/app/services/shortener-api/shortener-api /service/shortener-api
+WORKDIR /service
+USER shortener
+CMD ["./shortener-api"]
+
+LABEL org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.title="shortener-api" \
+      org.opencontainers.image.authors="Maurizio Branca <maurizio.branca@gmail.com>" \
+      org.opencontainers.image.source="https://github.com/zmoog/service/app/shortener-api" \
+      org.opencontainers.image.revision="${BUILD_REF}" \
+      org.opencontainers.image.vendor="zmoog labs"

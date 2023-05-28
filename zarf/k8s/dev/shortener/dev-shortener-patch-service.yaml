@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: shortener-service
+  namespace: shortener-system
+spec:
+  selector:
+    app: shortener
+  type: ClusterIP
+  ports:
+  - name: shortener-api
+    port: 3000
+    targetPort: shortener-api
+  - name: shortener-debug
+    port: 4000
+    targetPort: shortener-debug

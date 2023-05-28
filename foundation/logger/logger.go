@@ -1,3 +1,4 @@
+// Package logger provides a convenient wrapper around zap to make it easier to set up structured logging.
 package logger
 
 import (
@@ -14,6 +15,7 @@ func New(service string, outputPaths ...string) (*zap.SugaredLogger, error) {
 		"service": service,
 	}
 
+	// Just log to stdout to keep life simple for devops people (me).
 	config.OutputPaths = []string{"stdout"}
 	if outputPaths != nil {
 		config.OutputPaths = outputPaths

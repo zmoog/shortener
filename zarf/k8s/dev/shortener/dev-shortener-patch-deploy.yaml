@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shortener
+  namespace: shortener-system
+spec:
+  selector:
+    matchLabels:
+      app: shortener
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: shortener
+    spec:
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      containers:
+      - name: shortener-api
+        resources:
+          limits:
+            cpu: "2000m" # Execute instructions 100ms/100ms on my 1 core.
+          requests:
+            cpu: "1000m" # I need access to 1 core on the node.
